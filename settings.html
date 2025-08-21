@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        .settings_box {
+            background-color: #3b312b;
+            border: 2px solid #6b5a4d;
+            width: 100%;
+            border-radius: 12px;
+            padding: 2.5rem;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .settings_box h1 {
+            color: #e5e5e5;
+            font-weight: 700;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .settings_box p {
+            color: #bfa89c;
+            line-height: 1.6;
+        }
+
+        #settings-menu {
+            width: 97vh;
+            height: 98%;
+        }
+
+        .fade-in {
+            animation: opac 1.8s
+        }
+
+        @keyframes opac {
+            from {
+                opacity: 0
+            }
+
+            to {
+                opacity: 1
+            }
+        }
+
+        body {
+            background-color: #2c2c2c;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+
+        .container {
+            font-family: 'Inter', sans-serif;
+            color: #ccc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 2rem;
+            box-sizing: border-box;
+        }
+
+
+        .steampunk-box {
+            background-color: #3b312b;
+            border: 2px solid #6b5a4d;
+            max-width: 600px;
+            width: 100%;
+            border-radius: 12px;
+            padding: 2.5rem;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .steampunk-box h1 {
+            color: #e5e5e5;
+            font-weight: 700;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .steampunk-box p {
+            color: #bfa89c;
+            line-height: 1.6;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .button-container {
+            position: absolute;
+            top: 0.5rem;
+            left: 1rem;
+            font-size: 30px;
+        }
+        .settings_table {
+            color: #bfa89c;
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1.5rem; 
+
+        }
+        .settings_table_row {
+
+        }
+        #difficulty {
+            width: 30px;
+            background-color: #6b5a4d;
+        }
+        #difficulty:focus {
+            width: 30;
+            background-color: #6b5a4d;
+
+        }
+
+</style>
+    <script>
+        function toggle(on_off) {
+            if (on_off == 0) {
+                document.getElementById("main_menu").style.display = 'none';
+                document.getElementById("settings_menu").style.display = 'flex';
+            }
+            else {
+                document.getElementById("settings_menu").style.display = 'none';
+                document.getElementById("main_menu").style.display = 'flex';
+            }
+        }
+    </script>
+</head>
+
+<body>
+
+    <div id="main_menu" class="container fade-in">
+        <div id="targetElement" class="steampunk-box">
+            <h1>Mechanisms 2</h1>
+            <p>Welcome. </p> <br>
+            <div class="space-out">
+                <button onclick="toggle(0)">Settings</button>
+                <button>Play</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="settings_menu" class="container settings hidden">
+        <div id="targetElement" class="settings_box">
+            <div class="space-out button-container">
+                <button onclick="toggle(1)">←</button>
+            </div>
+            <h1>Settings</h1>
+            <table class="settings_table">
+                <tr class="settings_table_row">
+                    <th>Setting</th>
+                    <th>Description</th>
+                    <th>Options</th>
+                    <th>Enabled/Rule</th>
+                </tr>
+                <br>
+                <tr>
+                    <td>Difficulty</td>
+                    <td>The difficulty the game will be at. </td>
+                    <td>"1" (easy), "2", (medium), <br>"3", (hard), or "4" (nightmare)</td>
+                    <td><input 
+                    maxlength="1" 
+                    type="number" 
+                    min="1" 
+                    max="4"
+                    name="difficulty" 
+                    pattern="[1-4]{1}"  
+                    id="difficulty" 
+                    onkeydown="return false"></td> <!-- regex my beloved <3 -->
+                </tr>
+                <tr>
+                    <td>Natural disasters</td>
+                    <td>Whether or not the weather is wondering whether or not to kill you</td>
+                    <td>"1" (ON), "2", (OFF)</td>
+                    <td><input 
+                        maxlength="1" 
+                        type="number" 
+                        min="1" 
+                        max="2"
+                        name="difficulty" 
+                        pattern="[1-2]{1}"  
+                        id="difficulty" 
+                        onkeydown="return false"></td> <!-- regex my beloved <3 -->
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                
+            </table>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mechanisms 2 - Dev</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.4.4/lz-string.min.js"></script>
+    <script src="object.js"></script>
+    <script src="app.js"></script>
+    <link rel="stylesheet" href="main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- steam punky styling -->
+    <div class="stp-container">
+        <h1 id="title">Mechanisms 2</h1>
+        <div class="flexBarContainer">
+            <div class="flexBar">
+                <h3 class="statBar" id="hunger">Hunger: 20/20</h3>
+                <div class="hunger-bar-container">
+                    <div class="hunger-bar" id="hunger-bar"></div>
+                </div>
+            </div>
+            <div class="flexBar">
+                <h3 class="statBar" id="health">Health: 20/20</h3>
+                <div class="health-bar-container">
+                    <div class="health-bar" id="health-bar"></div>
+                </div>
+            </div>
+        </div>
+        <h3 class="statBar">Level: 1</h3>
+        <div class="xp-bar-container">
+            <div class="xp-bar" id="xp-bar"></div>
+        </div>
+        <h2>Resources</h2>
+        <p id="time">Forest, Clear Skies, Day: 1, 06:00</p>
+        <div class="inventory">
+            <div class="flexInvF">
+                <h3 class="inventory-header">Forestry</h3>
+                <p id="sticks">Sticks: 0</p>
+                <p id="flint">Flint: 0</p>
+                <p id="sand">Sand: 0</p>
+                <p id="clay">Clay: 0</p>
+            </div>
+            <div class="flexInvM">
+                <h3 class="inventory-header">Mining</h3>
+                <p id="stone">Stone: 0</p>
+                <p id="coal">Coal: 0</p>
+                <p id="ironOre">Iron Ore: 0</p>
+            </div>
+            <div class="flexInvC">
+                <h3 class="inventory-header">Food</h3>
+                <p id="berries">Berries: 0</p>
+                <p id="apples">Apples: 0</p>
+            </div>
+            <div class="flexInvT">
+                <h3 class="inventory-header">Tools</h3>
+                <p id="miningTool">Mining Tool: None</p>
+            </div>
+        </div>
+        <hr>
+        <button id="gather">Explore Forest</button>
+        <button id="mine" class="hidden">Mine Stone</button>
+        <div id="crafting" class="crafting-container">
+            <h2>Crafting</h2>
+        </div>
+    </div>
+</body>
+</html>

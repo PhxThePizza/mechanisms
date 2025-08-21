@@ -1,0 +1,278 @@
+$(document).ready(() => {
+// Generates a random integer between Low and High, inclusive
+function randInt(Low, High) {
+    return Math.floor(Math.random() * (High - Low + 1)) + Low;
+}
+let config;
+// Fetches configuration data (JSON) asynchronously from 'config.json'
+async function newConfig() {
+    try {
+        const response = await fetch('config.json');
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const config = await response.json();
+        return config;
+    } catch (error) {
+        console.error('Error fetching or parsing JSON:', error);
+    }
+}
+
+// Initializes the game by loading the config data
+async function init() {
+    config = await newConfig(); // Store the config data for future use
+    console.log(config);
+    return config
+}
+config = init();
+
+// Container for recipe buttons in the DOM
+const categoriesContainer = document.getElementById('crafting');
+
+// Converts camelCase or snake_case to human-readable format (e.g., pointyStick -> Pointy Stick)
+function formatRecipeName(name) {
+    return name.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+}
+
+// Generates crafting recipe buttons dynamically based on the config data
+function generateRecipeButtons() {
+    for (const recipeName in config.recipes) {
+        const button = document.createElement('button');
+        button.textContent = `Craft ${formatRecipeName(recipeName)}`;
+        button.id = `craft-${recipeName}`;
+
+        // Tooltip with material requirements for the recipe
+        const tooltip = document.createElement('span');
+        tooltip.classList.add('tooltip');
+        
+        let materialsHtml = 'Materials Needed: <br>';
+        const materialSources = config.recipes[recipeName].materials;
+        for (const source in materialSources) {
+            const materials = materialSources[source];
+            for (const material in materials) {
+                materialsHtml += `${materials[material]} x ${formatRecipeName(material)}<br>`;
+            }
+        }
+        tooltip.innerHTML = materialsHtml;
+
+        // Append the tooltip to the button
+        button.appendChild(tooltip);
+
+        // Event listener to handle crafting when the button is clicked
+        button.addEventListener('click', () => {
+            craftTool(config.recipes[recipeName]);
+            console.log(`Crafting recipe: ${recipeName}`);
+        });
+
+        categoriesContainer.appendChild(button);
+    }
+
+    // Create and add the 'Restart' button
+    const restartButton = document.createElement('button');
+    restartButton.id = 'restart';
+    restartButton.textContent = 'Restart';
+    restartButton.addEventListener('click', () => {
+        console.log('restart button clicked');
+    });
+    categoriesContainer.appendChild(restartButton);
+}
+
+// Generate recipe buttons when the page loads
+window.onload = generateRecipeButtons;
+
+// Format item names similarly to recipe names
+function formatItemName(name) {
+    return name
+        .replace(/([A-Z])/g, ' $1') // Insert space before capital letters
+        .replace(/^./, str => str.toUpperCase()); // Capitalize first letter
+}
+
+// Periodically save the game state every second
+setInterval(function() {
+    save();
+}, 1000);
+console.log(config);
+// Randomly select a biome from the list in config and assign it to the game
+function randomBiome() {
+    game.biome = config.biomeList[randInt(0, config.biomeList.length - 1)];
+}
+
+// Handles the player's death (triggered when health or hunger reaches 0)
+function dead() {
+    restart(); // Restart the game if the player is dead
+}
+
+// Updates game time (increases minute and adjusts hour if necessary)
+function updateTime(time) {
+    game.time.minute += time;
+    if (game.time.minute >= 60) {
+        game.time.minute -= 60;
+        game.time.hour++;
+    }
+}
+
+// Updates the player's stats: health and hunger
+function updateStats(Health, Hunger) {
+    game.stats.health -= Health;
+    game.stats.hunger -= Hunger;
+    if ((game.stats.health <= 0) || (game.stats.hunger <= 0)) {
+        dead(); // If health or hunger is 0, the player dies
+    }
+    $("#hunger").html("Hunger: " + game.stats.hunger + "/" + game.stats.maxHunger);
+
+    // Update hunger bar width
+    let O = game.stats.hunger * (100 / game.stats.maxHunger);
+    if (O > 100) {
+        $("#hunger-bar").css("width", "100%");
+    } else {
+        $("#hunger-bar").css("width", O.toString() + "%");
+    }
+
+    // Update health bar width
+    $("#health").html("Health: " + game.stats.health + "/" + game.stats.maxHealth);
+    let P = game.stats.health * (100 / game.stats.maxHealth);
+    if (P > 100) {
+        $("#health-bar").css("width", "100%");
+    } else {
+        $("#health-bar").css("width", P.toString() + "%");
+    }
+}
+
+// Gathers items from the forest based on gather power
+function gather(UH) {
+    console.log(game.gatherPower);
+
+    // Filter eligible loot based on gathering power
+    const eligibleLoot = Object.entries(config.forestLootpool)
+        .filter(([item, requiredPower]) => requiredPower <= game.gatherPower)
+        .map(([item]) => item);
+
+    // Gather loot based on gathering power
+    for (let i = 0; i < game.gatherPower; i++) {
+        const chosen = eligibleLoot[randInt(0, eligibleLoot.length - 1)];
+        game.forest[chosen] = (game.forest[chosen] || 0) + 1;
+    }
+
+    // Update stats if 'UH' (update health and hunger) flag is true
+    if (UH) {
+        updateStats(1, 2); // Example: -1 health, -2 hunger
+    }
+    updateInventory(); // Refresh inventory display
+}
+
+// Mines items from the mining loot pool based on mining power
+function mine(UH) {
+    // Filter eligible loot based on mining power
+    const eligibleLoot = Object.entries(config.miningLootpool)
+        .filter(([item, requiredPower]) => requiredPower <= game.miningPower)
+        .map(([item]) => item);
+
+    // Mine loot based on mining power
+    for (let i = 0; i < game.miningPower; i++) {
+        const chosen = eligibleLoot[randInt(0, eligibleLoot.length - 1)];
+        game.mining[chosen] = (game.mining[chosen] || 0) + 1;
+    }
+
+    // Update stats if 'UH' (update health and hunger) flag is true
+    if (UH) {
+        updateStats(3, 3); // Example: -3 health, -3 hunger
+    }
+    updateInventory(); // Refresh inventory display
+}
+
+// Craft a tool if the player has sufficient materials
+function craftTool(product) {
+    const resultItem = product.result;
+    const materials = product.materials;
+
+    // Check if the tool is already crafted
+    if (game.tools[resultItem]) return;
+
+    // Verify if player has enough materials to craft the tool
+    for (const location in materials) {
+        const items = materials[location];
+        for (const item in items) {
+            const requiredAmount = items[item];
+            const availableAmount = game[location]?.[item] ?? 0;
+            if (availableAmount < requiredAmount) return; // Not enough materials
+        }
+    }
+
+    // Deduct materials used for crafting
+    for (const location in materials) {
+        const items = materials[location];
+        for (const item in items) {
+            const amount = items[item];
+            game[location][item] -= amount;
+        }
+    }
+
+    // Add the crafted tool to the player's inventory
+    game.tools[resultItem] = true;
+
+    // Update power based on crafted tool
+    const power = config.toolStats[resultItem].type;
+    if (config.toolStats[resultItem][power] > game.miningPower) {
+        game.miningPower = config.toolStats[resultItem][power];
+        game.tools.miningTool = formatItemName(resultItem);
+    }
+    updateInventory(); // Refresh inventory display
+}
+
+// Update the inventory display on the UI
+function updateInventory() {
+    // Forest materials
+    $("#sticks").html("Sticks: " + game.forest.sticks);
+    $("#flint").html("Flint: " + game.forest.flint);
+    $("#sand").html("Clay: " + game.forest.clay);
+    $("#clay").html("Sand: " + game.forest.sand);
+
+    // Mining materials
+    $("#stone").html("Stone: " + game.mining.stone);
+    $("#coal").html("Coal: " + game.mining.coal);
+    $("#ironOre").html("Iron Ore: " + game.mining.ironOre);
+
+    // Food items
+    $("#berries").html("Berries: " + game.forest.berries);
+    $("#apples").html("Apples: " + game.forest.apples);
+
+    // Tools
+    $("#miningTool").html("Mining Tool: " + game.tools.miningTool);
+    if (game.tools.pointyStick) $("#mine").removeClass("hidden");
+}
+
+// Save the game state to localStorage
+function save() {
+    localStorage.save = JSON.stringify(game);
+    return game;
+}
+
+// Load the game state from localStorage
+function load() {
+    if (localStorage.save) {
+        game = JSON.parse(localStorage.save);
+    } else {
+        game = newGame(); // Start a new game if no saved data
+    }
+    updateInventory(); // Refresh inventory display
+    updateStats(0, 0); // Refresh stats display
+}
+
+// Load the game data when the page is loaded
+load();
+
+// Event listeners for gathering and mining actions
+$("#gather").on("click", () => gather(true));
+$("#mine").on("click", () => mine(true));
+$("#restart").on("click", () => restart());
+
+// Restart the game by resetting the game state
+function restart() {
+    game = newGame(); // Reset game state
+    updateInventory(); // Refresh inventory display
+    updateStats(0, 0); // Refresh stats display
+}
+
+// Uncomment the following line to enable biome randomization:
+if(game.biome){randomBiome()}
+});
